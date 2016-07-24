@@ -8,6 +8,11 @@ import android.hardware.SensorManager;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -176,6 +181,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         ImageView imageView = (ImageView) findViewById(R.id.fire);
         imageView.setImageResource(R.drawable.fire_emoji);
 
+        AlphaAnimation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setDuration(500);
+        fadeIn.setRepeatCount(Animation.INFINITE);
+        fadeIn.setRepeatMode(Animation.REVERSE);
+
+        imageView.startAnimation(fadeIn);
     }
 
 }
