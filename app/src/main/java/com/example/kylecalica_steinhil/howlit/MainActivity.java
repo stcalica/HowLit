@@ -35,7 +35,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     public static final float smoking = 20;
     public static final float ember = 40;
     public static final float flame = 50;
-    public static final float lit = 120;
+    public static final float lit = 110;
     public static final float nuclear = 150;
 
 
@@ -80,7 +80,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             long diff = (cur - lastUpdate);
             lastUpdate = cur;
-
+            //differences
             float speed = Math.abs(x + y + z - last_x - last_y - last_z);
             Log.v(TAG, "speed: " + Float.toString(speed));
             setLevel(speed);
