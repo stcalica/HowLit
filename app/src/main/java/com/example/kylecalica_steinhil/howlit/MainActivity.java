@@ -3,6 +3,7 @@ package com.example.kylecalica_steinhil.howlit;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
@@ -27,6 +28,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
 
 
@@ -46,7 +52,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private static final int SHAKE_THRESHOLD_MID = 40;
     private static final int SHAKE_THRESHOLD_HIGH = 110;
 
-
+    private String[] artist_list = new String[4];
 
 //    public static float high;
 //    public static float last_high;
@@ -58,10 +64,45 @@ public class MainActivity extends Activity implements SensorEventListener {
     public static final float nuclear = 80;
 
 
+
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("artists.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        artist_list[0] = "The Weekend";
+        artist_list[1] = "Iggy Azella";
+        artist_list[2] = "Ice Cube";
+        artist_list[3] = "Eazy E";
+
+//
+//        try {
+//            JSONObject obj = new JSONObject(loadJSONFromAsset());
+//            Log.v("JSON", obj.toString());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
 
         final ProgressBar pb = (ProgressBar) findViewById(R.id.pb);
        // final Button btn = (Button) findViewById(R.id.btn);
@@ -268,4 +309,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         imageView.startAnimation(fadeIn);
     }
 
-}
+
+    }
+
+

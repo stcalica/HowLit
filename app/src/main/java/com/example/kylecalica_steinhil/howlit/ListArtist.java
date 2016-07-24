@@ -11,15 +11,37 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class ListArtist extends AppCompatActivity {
 
-    private String[] artist_list = new String[2];
+    private String[] artist_list = new String[4];
     private String chosen_artist;
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("artists.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
 
 
     @Override
@@ -27,10 +49,15 @@ public class ListArtist extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_artist);
 
+
+
         final ListView listing = (ListView) findViewById(R.id.ArtistList);
 
         artist_list[0] = "The Weekend";
         artist_list[1] = "Iggy Azella";
+        artist_list[2] = "Ice Cube";
+        artist_list[3] = "Eazy E";
+
 
         final List<String> artists = new ArrayList<String>(Arrays.asList(artist_list));
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, artists);
