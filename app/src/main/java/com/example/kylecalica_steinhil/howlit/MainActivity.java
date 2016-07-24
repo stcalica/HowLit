@@ -6,14 +6,18 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.media.Image;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.hardware.SensorEventListener;
@@ -29,6 +33,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private SensorManager sM;
     private Sensor accel;
 
+    private int progressStatus = 0;
+    private Handler handler = new Handler();
 
     private long lastUpdate = 0;
     private float last_x, last_y, last_z;
@@ -51,7 +57,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        drawFire();
+        final ProgressBar pb = (ProgressBar) findViewById(R.id.pb);
+        final Button btn = (Button) findViewById(R.id.btn);
+
+        //drawFire();
 
         // sensor init
 
@@ -61,15 +70,43 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         // init
         high = 0;
-        last_high =0;
+        last_high = 0;
         lastUpdate = System.currentTimeMillis();
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressStatus = 0;
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (progressStatus < 100) {
+                            progressStatus += 1;
+                            try {
+                                Thread.sleep(20);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pb.setProgress(progressStatus);
+                                }
+                            });
+                        }
+                    }
+                }
+                ).start();
+            }
+        });
+    }
+
 
 //
 //        last_x = 0;
 //        last_y = 0;
 //        last_z = 0;
-    }
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -91,7 +128,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             lastUpdate = cur;
             //differences
             float speed = Math.abs(x + y + z - last_x - last_y - last_z);
-            Log.v(TAG, "speed: " + Float.toString(speed));
+            //Log.v(TAG, "speed: " + Float.toString(speed));
             setLevel(speed);
 
         }
@@ -102,18 +139,19 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         if (speed > high){
             if (speed > smoking) {
+                drawFire(500);
                 setHighest(smoking);
                 setMessage(smoking);
 
             }
             if (speed > ember) {
-
+                drawFire(300);
                 setHighest(ember);
                 setMessage(ember);
 
             }
             if (speed > flame) {
-
+                drawFire(100);
                 setHighest(flame);
                 setMessage(flame);
 
@@ -177,12 +215,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     }
 
-    private void drawFire() {
+    private void drawFire(long speed) {
         ImageView imageView = (ImageView) findViewById(R.id.fire);
         imageView.setImageResource(R.drawable.fire_emoji);
 
         AlphaAnimation fadeIn = new AlphaAnimation(0, 1);
-        fadeIn.setDuration(500);
+        fadeIn.setDuration(speed);
         fadeIn.setRepeatCount(Animation.INFINITE);
         fadeIn.setRepeatMode(Animation.REVERSE);
 
