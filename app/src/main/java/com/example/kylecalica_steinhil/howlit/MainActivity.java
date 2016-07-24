@@ -2,6 +2,7 @@ package com.example.kylecalica_steinhil.howlit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
@@ -9,6 +10,7 @@ import android.media.Image;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.FloatProperty;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -37,19 +39,23 @@ public class MainActivity extends Activity implements SensorEventListener {
     private Handler handler = new Handler();
 
     private long lastUpdate = 0;
-    private float last_x, last_y, last_z;
-    private static final int SHAKE_THRESHOLD = 5;
+    private float last_x, last_y, last_z, score;
     private static final String TAG = "SHAKING";
+    private String artist;
+    private static final int SHAKE_THRESHOLD_LOW = 17;
+    private static final int SHAKE_THRESHOLD_MID = 40;
+    private static final int SHAKE_THRESHOLD_HIGH = 110;
 
 
-    public static float high;
-    public static float last_high;
 
-    public static final float smoking = 20;
-    public static final float ember = 40;
-    public static final float flame = 50;
-    public static final float lit = 110;
-    public static final float nuclear = 150;
+//    public static float high;
+//    public static float last_high;
+
+    public static final float smoking = 5;
+    public static final float ember = 10;
+    public static final float flame = 22;
+    public static final float lit = 40;
+    public static final float nuclear = 80;
 
 
     @Override
@@ -58,8 +64,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
 
         final ProgressBar pb = (ProgressBar) findViewById(R.id.pb);
-        final Button btn = (Button) findViewById(R.id.btn);
-
+       // final Button btn = (Button) findViewById(R.id.btn);
+        score = 0;
         //drawFire();
 
         // sensor init
@@ -68,45 +74,63 @@ public class MainActivity extends Activity implements SensorEventListener {
         accel = sM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sM.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
 
+        Intent intent = getIntent();
+        if(intent != null){
+            artist = intent.getStringExtra("artist");
+            if(artist == null ){
+                Toast.makeText(MainActivity.this, "No Artist Selected", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, artist, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
         // init
-        high = 0;
-        last_high = 0;
+//        high = 0;
+//        last_high = 0;
         lastUpdate = System.currentTimeMillis();
 
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                progressStatus = 0;
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (progressStatus < 100) {
-                            progressStatus += 1;
-                            try {
-                                Thread.sleep(20);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    pb.setProgress(progressStatus);
-                                }
-                            });
-                        }
-                    }
-                }
-                ).start();
-            }
-        });
+//        btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                progressStatus = 0;
+//
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        while (progressStatus < 100) {
+//                            progressStatus += 1;
+//                            try {
+//                                Thread.sleep(20);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                            handler.post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    pb.setProgress(progressStatus);
+//                                }
+//                            });
+//                        }
+//                    }
+//                }
+//                ).start();
+//            }
+//        });
     }
 
 
-//
-//        last_x = 0;
-//        last_y = 0;
-//        last_z = 0;
+    public void listArtists(View view){
+        Intent listArtists = new Intent(MainActivity.this, ListArtist.class);
+        if(artist != null){
+            //update artist with API
+            Toast.makeText(MainActivity.this, "Updated "+ artist + " with score of " + Float.toString(score), Toast.LENGTH_SHORT ).show();
+        }
+
+        startActivity(listArtists);
+    }
+
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -128,63 +152,80 @@ public class MainActivity extends Activity implements SensorEventListener {
             lastUpdate = cur;
             //differences
             float speed = Math.abs(x + y + z - last_x - last_y - last_z);
+            if(speed > SHAKE_THRESHOLD_LOW ){
+                if(speed > SHAKE_THRESHOLD_MID){
+                    if(speed > (SHAKE_THRESHOLD_HIGH)) {
+                        score = (float) (score + 0.5);
+                    } else {
+                        score = (float) (score + 0.05);
+                    }
+                }  else {
+
+                        score = (float) (score + 0.01);
+                }
+
+            }
+
             //Log.v(TAG, "speed: " + Float.toString(speed));
-            setLevel(speed);
+            setLevel(score);
 
         }
     }
 
     public void setLevel(float speed) {
 
+        TextView scoreboard = (TextView) findViewById(R.id.score);
+        scoreboard.setText(Float.toString(speed));
 
-        if (speed > high){
+
+//        if (speed > high){
             if (speed > smoking) {
                 drawFire(500);
-                setHighest(smoking);
+//                setHighest(smoking);
                 setMessage(smoking);
 
             }
             if (speed > ember) {
                 drawFire(300);
-                setHighest(ember);
+//                setHighest(ember);
                 setMessage(ember);
 
             }
             if (speed > flame) {
                 drawFire(100);
-                setHighest(flame);
+//                setHighest(flame);
                 setMessage(flame);
 
             }
             if (speed > lit) {
 
-                setHighest(lit);
+//                setHighest(lit);
                 setMessage(lit);
 
             }
 
             if (speed > nuclear) {
 
-                setHighest(nuclear);
+//                setHighest(nuclear);
                 setMessage(nuclear);
 
             }
-        }
+//        }
     }
 
 
 
-    public void setHighest(float level) {
-
-        Log.v(TAG, "LEVEL: " + Float.toString(level) );
-        if (level > high) {
-
-            high = level;
-            Log.v(TAG, "NEWEST HIGH IS      " + Float.toString(level));
-
-        }
-
-    }
+//    public void setHighest(float level) {
+//
+//        Log.v(TAG, "LEVEL: " + Float.toString(level) );
+//        if (level > high) {
+//
+//            high = level;
+//            Log.v(TAG, "NEWEST HIGH IS      " + Float.toString(level));
+//
+//        }
+//
+//    }
 
     public void setMessage(float level){
         String smokeMsg = "Move it! Move it!";
