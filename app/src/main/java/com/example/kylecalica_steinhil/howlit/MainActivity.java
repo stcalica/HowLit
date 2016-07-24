@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.hardware.SensorEventListener;
 import android.hardware.Sensor;
@@ -28,6 +29,16 @@ public class MainActivity extends Activity implements SensorEventListener {
     private static final String TAG = "SHAKING";
 
 
+    public static float high;
+    public static float last_high;
+
+    public static final float smoking = 20;
+    public static final float ember = 40;
+    public static final float flame = 50;
+    public static final float lit = 120;
+    public static final float nuclear = 150;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +51,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         sM.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
 
         // init
-
+        high = 0;
+        last_high =0;
         lastUpdate = System.currentTimeMillis();
 
 //
@@ -70,17 +82,87 @@ public class MainActivity extends Activity implements SensorEventListener {
             lastUpdate = cur;
 
             float speed = Math.abs(x + y + z - last_x - last_y - last_z);
-            Log.v(TAG, "speed: "+ Float.toString(speed)  );
-
-//            switch (speed){
-//
-//
-//            }
-
+            Log.v(TAG, "speed: " + Float.toString(speed));
+            setLevel(speed);
 
         }
     }
 
+    public void setLevel(float speed) {
+
+
+        if (speed > high){
+            if (speed > smoking) {
+                setHighest(smoking);
+                setMessage(smoking);
+
+            }
+            if (speed > ember) {
+
+                setHighest(ember);
+                setMessage(ember);
+
+            }
+            if (speed > flame) {
+
+                setHighest(flame);
+                setMessage(flame);
+
+            }
+            if (speed > lit) {
+
+                setHighest(lit);
+                setMessage(lit);
+
+            }
+
+            if (speed > nuclear) {
+
+                setHighest(nuclear);
+                setMessage(nuclear);
+
+            }
+        }
+    }
+
+
+
+    public void setHighest(float level) {
+
+        Log.v(TAG, "LEVEL: " + Float.toString(level) );
+        if (level > high) {
+
+            high = level;
+            Log.v(TAG, "NEWEST HIGH IS      " + Float.toString(level));
+
+        }
+
+    }
+
+    public void setMessage(float level){
+        String smokeMsg = "Move it! Move it!";
+        String emberMsg = "Light it up!";
+        String flameMsg = "When a fire starts to burn...";
+        String litMsg = "IT'S LIT!!!";
+        String nuclearMsg = "BOOM! YOUR NUCLEAR!";
+
+        TextView txt = (TextView) findViewById(R.id.message);
+        switch((int)level){
+
+            case (int)smoking: txt.setText(smokeMsg); break;
+
+            case (int)ember: txt.setText(emberMsg); break;
+
+            case (int)flame: txt.setText(flameMsg); break;
+
+            case (int)lit: txt.setText(litMsg); break;
+
+            case (int)nuclear: txt.setText(nuclearMsg); break;
+        }
+
+
+
+    }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
