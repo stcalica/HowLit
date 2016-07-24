@@ -5,8 +5,10 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.hardware.SensorEventListener;
@@ -43,6 +45,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        drawFire();
 
         // sensor init
 
@@ -165,6 +169,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    private void drawFire() {
+        ImageView imageView = (ImageView) findViewById(R.id.fire);
+        imageView.setImageResource(R.drawable.fire_emoji);
 
     }
 
