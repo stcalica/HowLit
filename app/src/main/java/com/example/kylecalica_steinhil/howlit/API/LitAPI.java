@@ -14,7 +14,7 @@ import retrofit.http.Path;
 public interface LitAPI {
 
     @GET("/artists")
-    public void getListofArtists(@Path("artists") String user, Callback<ArtistModel> response);
+    public void getListofArtists(Callback<ArtistModel> response);
 
 }
 

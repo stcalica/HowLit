@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.kylecalica_steinhil.howlit.API.LitAPI;
+import com.example.kylecalica_steinhil.howlit.Models.ArtistModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,10 +25,22 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class ListArtist extends AppCompatActivity {
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
+public class ListArtist extends AppCompatActivity {
+    //test struct
     private String[] artist_list = new String[4];
+
+    //for selected artist
     private String chosen_artist;
+
+
+    //API string
+    private String API = "";
+
 
     public String loadJSONFromAsset() {
         String json = null;
@@ -49,17 +64,38 @@ public class ListArtist extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_artist);
 
-
-
-        final ListView listing = (ListView) findViewById(R.id.ArtistList);
-
+         //test data and structures
         artist_list[0] = "The Weekend";
         artist_list[1] = "Iggy Azella";
         artist_list[2] = "Ice Cube";
         artist_list[3] = "Eazy E";
-
-
         final List<String> artists = new ArrayList<String>(Arrays.asList(artist_list));
+
+        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(API).build();
+
+        LitAPI lit = restAdapter.create(LitAPI.class);
+
+
+        lit.getListofArtists(new Callback<ArtistModel>() {
+            @Override
+            public void success(ArtistModel artistModel, Response response) {
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+
+
+        //REST API call
+        final ListView listing = (ListView) findViewById(R.id.ArtistList);
+
+
+
+
+
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, artists);
         listing.setAdapter(adapter);
 
