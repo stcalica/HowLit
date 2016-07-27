@@ -201,7 +201,6 @@ public class MainActivity extends Activity implements SensorEventListener {
                         score = (float) (score + 0.05);
                     }
                 }  else {
-
                         score = (float) (score + 0.01);
                 }
 
