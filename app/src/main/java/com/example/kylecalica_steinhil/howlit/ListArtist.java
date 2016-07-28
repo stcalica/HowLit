@@ -75,43 +75,51 @@ public class ListArtist extends AppCompatActivity {
 
         LitAPI lit = restAdapter.create(LitAPI.class);
 
-
+        //REST API call
         lit.getListofArtists(new Callback<ArtistModel>() {
             @Override
             public void success(ArtistModel artistModel, Response response) {
+                //store artist data into structures
+                //data structres will be an array of the class
+
+
+
 
             }
 
             @Override
             public void failure(RetrofitError error) {
+                    //print out errors to log
+
+                    //scrap list view and load an error page
 
             }
         });
 
 
-        //REST API call
+        //fill out layout with model
         final ListView listing = (ListView) findViewById(R.id.ArtistList);
 
-
-
-
-
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, artists);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.artist_box_layout, artists);
         listing.setAdapter(adapter);
 
         //button onClickListener to select the artist
         listing.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-               // Toast.makeText(ListArtist.this, "Clicked", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(ListArtist.this, "Clicked", Toast.LENGTH_SHORT).show();
                 chosen_artist = artist_list[i];
                 Log.v("ARTIST", chosen_artist);
                 Intent litTracker = new Intent(ListArtist.this, MainActivity.class).putExtra("artist", chosen_artist);
                 startActivity(litTracker);
-
-
-
             }
         });
+
+
+
+
+
+
+
     }
 }

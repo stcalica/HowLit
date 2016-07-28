@@ -1,6 +1,6 @@
 from flask import Flask
 from flaskext.mysql import MySQL
-import json
+import collections, json
 
 mysql = MySQL()
 app = Flask(__name__)
@@ -10,18 +10,26 @@ app.config['MYSQL_DATABASE_DB'] = 'how_lit_db'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
+
+
 @app.route("/")
 def hello():
     return "Artist Rankings"
 
+
 #list all artist!
-@app.route("/getArtist")
+@app.route("/getArtists")
 def get_artist():
     cursor = mysql.connect().cursor()
     cursor.execute("SELECT artist_name,artist_lit_level FROM artist_tbl" )
     data = cursor.fetchall()
-
-    return json.dumps(data)
+    all = []
+    for row in data:
+    	d = collections.OrderedDict() 
+    	d['name'] = row[0]
+    	d['level'] = row[1]
+	all.append(d)
+    return json.dumps(all)
 
 @app.route("/updateLitLevel")
 def update_lit_level():
