@@ -1,9 +1,12 @@
 from flask import Flask
 import json
-from flaskext.mysql import MySql
+from flaskext.mysql import MySQL 
+
+
+MS = MySQL() 
 
 #connect to the DB
-db1 = MS.connect(host="localhost",user="root",passwd="barry1")
+db1 = MS.connect("localhost","root","barry1")
 cursor = db1.cursor()
 sql = 'CREATE DATABASE IF NOT EXISTS how_lit_db'
 cursor.execute(sql)
